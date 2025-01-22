@@ -1,0 +1,237 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+@use 'sass:color';
+
+.contenedor-app{
+    display: block;
+}
+.app{
+    margin-top: 2rem;
+}
+
+.titulos{
+    font-size: 5rem;
+    padding: 5rem 0;
+    font-weight: v.$delgada;
+
+}
+
+.nombre-pagina{
+    color: white;
+}
+
+.descripcion-pagina{
+    color: white;
+}
+
+
+
+.navegacion{
+    width: 95%;
+    max-width: 200rem;
+    margin: 0 auto;
+    padding: 2rem;
+    margin-top: 1rem;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  
+
+    .campo {
+        display: flex;
+        flex-direction: column; /* Pone el label arriba del input/select */
+        flex: 1; /* Permite que cada grupo ocupe un espacio proporcional */
+        min-width: 200px; /* Ancho mínimo para cada conjunto */
+    }
+
+    label {
+        margin-bottom: 0.5rem; /* Espaciado entre el label y el input/select */
+        font-weight: v.$bold;
+
+    }
+    
+    input, select {
+        padding: 0.5rem;
+        font-size: 1.5rem;
+        width: 100%; /* Asegura que los inputs/selecciones ocupen todo el ancho del grupo */
+    }
+
+    legend {
+        font-size: 2rem;
+
+    }
+}
+
+
+.header {
+    color: v.$blanco;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+
+/* Imagen de fondo independiente cuando no hay sesión */
+.imagen-fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/imagen.jpg');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -1; // Envía la imagen detrás del contenido
+}
+
+/* Ajuste del encabezado cuando no hay sesión */
+.centrado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: center;
+    padding-top: 5rem;
+    position: relative;
+
+
+    h1 {
+        margin: 0 auto;
+        font-size: 5rem;
+    }
+}
+
+/* Ajuste del encabezado cuando hay sesión */
+.encabezado-sesion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 2rem;
+    height: 16rem; // Tamaño del encabezado cuando hay sesión
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/imagen.jpg');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* Contenedor del encabezado */
+.encabezado {
+    display: flex;
+    align-items: center;  // Alinea verticalmente los elementos
+    justify-content: center;  // Centra los elementos en el contenedor
+    width: 100%;
+    padding: 1rem 2rem;
+    gap: 1rem;  // Espaciado entre logo y título
+
+    .menu-barras {
+        position: relative;
+    
+        .menu-icon {
+            background: none;
+            border: none;
+            font-size: 4rem;
+            cursor: pointer;
+            color: white;
+            padding: 0.5rem;
+    
+            &:hover {
+                color: rgba(255, 255, 255, 0.8);
+            }
+        }
+    
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* Oculto por defecto */
+            z-index: 999; /* Detrás del menú deslizante pero delante de la página */
+        }
+    
+        .menu-overlay.activo {
+            display: block; /* Mostrar cuando se abre el menú */
+        }
+    
+        .menu-deslizante {
+            position: fixed;
+            top: 0;
+            left: -100%; /* Oculto inicialmente */
+            width: 250px;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            gap: 1rem;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease;
+            z-index: 1000; /* Asegura que el menú esté encima del overlay */
+    
+            a {
+                text-decoration: none;
+                color: white;
+                font-size: 1.6rem;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+                transition: background-color 0.3s ease;
+    
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.2);
+                }
+    
+                &.activo {
+                    background-color: rgba(255, 255, 255, 0.4);
+                    font-weight: bold;
+                }
+            }
+    
+            .menu-cerrar {
+                align-self: flex-end;
+                background: none;
+                border: none;
+                font-size: 2rem;
+                color: white;
+                cursor: pointer;
+    
+                &:hover {
+                    color: rgba(255, 255, 255, 0.8);
+                }
+            }
+        }
+    
+        .menu-abierto {
+            left: 0; /* Mostrar el menú */
+        }
+    }
+    
+    
+
+    .logo {
+        width: 10rem;  // Ajusta el tamaño del logo
+        height: auto;
+    }
+
+    .titulos {
+        font-size: 5rem;
+        padding: 0;
+        font-weight: v.$delgada;
+        white-space: nowrap;  // Evita que el título se divida en varias líneas
+    }
+
+    .session {
+        margin-left: auto;  // Empuja la sesión a la derecha si está activa
+
+        a {
+            text-decoration: none;
+            color: white;
+            font-size: 2rem;
+        }
+    }
+}

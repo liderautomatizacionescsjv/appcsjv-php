@@ -1,0 +1,103 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+
+
+/* Contenedor del login */
+.contenedor_login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative; // Asegura que esté por encima de la imagen de fondo
+    z-index: 10; // Eleva el contenedor por encima de la imagen de fondo
+}
+
+
+/* Tarjeta del login */
+.login_card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    // margin-top: 4rem;
+}
+
+/* Título */
+.titulo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+/* Subtítulo */
+.subtitulo {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Campos del formulario */
+.campo {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Enlace Olvidó contraseña */
+.enlace {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    color: #00A6E1;
+    text-decoration: none;
+    margin-bottom: 15px;
+}
+
+.enlace:hover {
+    text-decoration: underline;
+}
+
+/* Botón de ingreso */
+.boton {
+    width: 100%;
+    padding: 12px;
+    background: #00A6E1;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.boton:hover {
+    background: #2563eb;
+}
+
+/* Registro */
+.registro {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.registro a {
+    color: #00A6E1;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.registro a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,149 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+@use 'sass:color';
+
+
+.contenedor{
+    display: flex;
+    // grid-template-columns: repeat(2, 0.2fr);
+    width: 95%;
+    border: 1px solid black;
+    max-width: 200rem;
+    margin-top: 1rem;
+    overflow: hidden;
+
+    p {
+        color: black;
+    }
+    .estudiantes {
+        flex: 1; /* Ocupa el espacio disponible */
+        overflow-y: auto; /* Hace que los estudiantes tengan scroll */
+        max-height: 100vh; /* No permite que crezcan más allá de la pantalla */
+        
+    }
+    
+    .info-estudiante {
+        width: 80%;
+        max-width: 160rem;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-left: 2px solid v.$gris;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto; /* Permite hacer scroll en la información */
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+        &.oculta {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100%);
+            pointer-events: none;
+        }
+    }
+    
+}
+
+// .form-hover{
+//     :hover{
+//         background-color: color.scale(v.$azulOscuro, $lightness: -19.921875%);
+//         color: white;
+//     }
+    
+// }
+
+.ficha {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    // text-align: center;
+    min-width: 150px;
+    max-width: 40rem;
+    width: 55rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: v.$regular;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+    border: 1px solid black;
+    margin: 1rem;
+    position: relative; /* Asegura que el hover y la selección cubran toda la ficha */
+    overflow: hidden; /* Evita que elementos internos sobresalgan */
+    
+    .info-ficha{
+        flex-grow: 1; /* Hace que la info-ficha use todo el espacio disponible */
+        padding: 1rem;
+        transition: color 0.3s ease-in-out;
+    }
+
+    &:hover{
+        background-color: color.scale(v.$azulOscuro, $lightness: -19.921875%);
+        color: white;
+        .info-ficha{
+            p{
+                color: white;
+            }
+        }
+
+        .estado-estudiante{
+            color: white;
+        }
+    }
+    
+
+    
+}
+
+
+
+
+.ficha.seleccionado {
+    background-color: color.scale(v.$azulOscuro, $lightness: -19.921875%);
+    color: white;
+    font-weight: bold;
+    border: 2px solid color.scale(v.$azulOscuro, $lightness: 5%);;
+    
+    .estado-estudiante{
+        color: white;
+    }
+}
+
+.no-margin{
+    margin: 0;
+    padding: 0;
+    font-weight: v.$delgada;
+    font-size: 2rem;
+}
+
+.acciones{
+    input{
+        width: 20rem;
+        margin: 0.5rem;
+
+    }
+    button{
+        width: 20rem;
+        margin: 0.5rem;
+    }
+
+    .registro{
+        a{
+            font-size: 2rem;
+        }
+    }
+}
+
+.info-detallada{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 3px solid v.$gris;
+    padding: 2rem;
+    // background-color: color.scale(v.$gris, $lightness: 60%);
+}
+
+
+
+
+

@@ -1,0 +1,49 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+
+.notificacion-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    height: 5rem;
+    z-index: 9999;
+}
+
+.notificacion {
+    background-color: v.$blanco; /* Verde éxito */
+    color: black;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    transform: translateX(100%);
+    animation: slideIn 0.5s forwards, fadeOut 0.5s 3s forwards;
+    z-index: 100000;
+}
+
+.notificacion i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}

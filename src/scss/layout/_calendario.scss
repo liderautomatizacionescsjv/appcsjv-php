@@ -1,0 +1,282 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+@use 'sass:color';
+
+.container {
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 20px;
+}
+
+/* Estilo para la lista de carros en mosaico */
+#carros-container {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    margin-right: 20px;
+    background-color: white;
+
+    label{
+        font-size: 3rem;
+        font-weight: v.$delgada;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    select{
+        margin-bottom: 1rem;
+        height: 4rem;
+    }
+}
+
+#carroSelectMedellin, #carroSelectRetiro {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 390px; /* Ajustar el tamaño según sea necesario */
+    position: relative; /* Para que los títulos sean relativos a este contenedor */
+}
+
+.carro-item {
+    padding: 10px;
+    margin: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carro-item.selected {
+    background-color: v.$azulgris;
+    color: v.$negro;
+    border-color: rgba(255, 255, 255, 0.673);
+    border-width: 3px;
+    border-style: solid;
+}
+
+.carro-item:hover {
+    background-color: color.scale(v.$azulgris, $lightness: 10%);
+    color: black;
+    border-color: #ffffff;
+}
+
+.carro-title {
+    position: sticky;
+    top: 0;
+    border-bottom: 2px solid #ddd;
+    padding: 10px;
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: color.scale(v.$azul, $lightness: 0%) ;
+    color: white;
+    
+}
+
+.fc .fc-button-group>.fc-button.fc-button-active, .fc .fc-button-group>.fc-button:active, .fc .fc-button-group>.fc-button:focus, .fc .fc-button-group>.fc-button:hover {
+    z-index: 0;
+}
+
+#calendar-container {
+    flex-grow: 1;
+    margin-left: 20px;
+    position: relative;
+    margin-top: 30px;
+}
+
+#calendar {
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    height: 65rem;
+}
+
+.fc .fc-day-today {
+    background-color: rgba(0, 123, 255, 0.2) !important;
+    color: #000;
+}
+
+.fc-event-main{
+    background-color: #ef891d;
+    border: 2px solid black;
+    font-size: 1.8rem;
+}
+
+.reservar-button {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #111c4e;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+}
+
+.reservar-button:hover {
+    background-color: #0056b3;
+}
+
+/* -------------------- CONTAINER --------------------------*/
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    
+    p{
+        color: black;
+    }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content label {
+    margin-top: 10px;
+}
+
+.modal-content input, .modal-content select, .modal-content button {
+    margin-top: 5px;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-content button {
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px #004494;
+}
+
+.modal-content button:hover {
+    background-color: #003d82;
+    box-shadow: 0 4px #002b61;
+}
+
+.modal-content button:active {
+    box-shadow: 0 2px #002b61;
+    transform: translateY(2px);
+}
+
+.btn-3d {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #ffa81d;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px #004494;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-3d:hover {
+    background-color: #003d82;
+    box-shadow: 0 4px #002b61;
+}
+
+.btn-3d:active {
+    box-shadow: 0 2px #002b61;
+    transform: translateY(2px);
+}
+
+.btn-3d:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* -------------------- MODAL --------------------------*/
+
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+
+.toast.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
