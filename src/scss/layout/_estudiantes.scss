@@ -18,12 +18,21 @@
     .estudiantes {
         flex: 1; /* Ocupa el espacio disponible */
         overflow-y: auto; /* Hace que los estudiantes tengan scroll */
-        max-height: 100vh; /* No permite que crezcan más allá de la pantalla */
+        max-height: 40vh; /* No permite que crezcan más allá de la pantalla */
         
+    }
+    .fichas {
+        flex: 1; // Permite que el contenedor crezca
+        max-height: 100vh; // Limita la altura del contenedor de fichas
+        overflow-y: auto; // Activa el scroll vertical solo en este contenedor
+        padding-right: 10px; // Evita que el scroll se solape con el contenido
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
     
     .info-estudiante {
-        width: 80%;
+        width: 75%;
         max-width: 160rem;
         padding: 20px;
         background-color: #f9f9f9;
@@ -43,6 +52,35 @@
     }
     
 }
+
+.oculto{
+    display: none;
+}
+
+
+#selectGrupo, #selectAsignatura {
+    min-width: 250px; /* Tamaño mínimo uniforme */
+    max-width: 100%;
+    white-space: nowrap; /* Evita que el texto se desborde */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Agrega "..." si el texto es muy largo */
+}
+.campo select {
+    width: 100%; /* Ambos selects ocuparán el ancho completo del contenedor */
+    max-width: 100%; /* Evita que se desborde */
+    padding: 8px; /* Espaciado interno para mejor apariencia */
+    font-size: 16px; /* Tamaño de fuente uniforme */
+    border: 1px solid #ccc; /* Bordes sutiles */
+    border-radius: 5px; /* Bordes redondeados */
+    background-color: #fff; /* Fondo blanco */
+}
+
+/* Permite que las opciones dentro del select puedan ajustarse */
+#selectGrupo option, #selectAsignatura option {
+    white-space: normal; /* Permite saltos de línea */
+    word-wrap: break-word;
+}
+
 
 // .form-hover{
 //     :hover{

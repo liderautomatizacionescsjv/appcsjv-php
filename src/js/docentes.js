@@ -16,24 +16,25 @@ let estadoGrupos = []; // Variable para almacenar el estado de los grupos
 let estudianteActual = null;
 let tipoReporteActual = "";
 
+const url_real = document.getElementById('urlreal').dataset.url;
+
 
 // DOM
 
 document.addEventListener("DOMContentLoaded", function () {
     iniciarApp();
-    cargarEstadoGrupos(); // Cargaar el estado de los grupos al inicio
-
-     // Agregar evento al buscador
-     const buscador = document.getElementById("buscador");
-     if (buscador) {
-         buscador.addEventListener("keyup", filtrarEstudiantesPorBusqueda);
-     }
+    cargarEstadoGrupos(); 
+    
+    
+    
 });
+
+
 
 
 async function cargarEstadoGrupos() {
     try {
-        const respuesta = await fetch("http://localhost:3002/api/estado-grupos");
+        const respuesta = await fetch(`${url_real}/api/estado-grupos`);
         estadoGrupos = await respuesta.json(); // Guardar el estado de los grupos
         console.log("Estado de los grupos:", estadoGrupos);
     } catch (error) {
@@ -43,6 +44,10 @@ async function cargarEstadoGrupos() {
 
 function iniciarApp(){
     // consultarGrupos();
+    const usuarioid = document.getElementById('usuario-id').dataset.id;
+    console.log(usuarioid);
+    agregarEventosUI();
+
     consultarApi();
     consultarReportes();
     cargarAsignaciones();
@@ -53,25 +58,125 @@ function iniciarApp(){
 
 
 // CONSULTAS
+function agregarEventosUI() {
+    // Agregar evento al buscador
+    const buscador = document.getElementById("buscador");
+    if (buscador) {
+        buscador.addEventListener("keyup", filtrarEstudiantesPorBusqueda);
+    }
 
-// async function consultarGrupos(){
-//     try {
-//         const url = 'http://localhost:3002/api/grupos';
-//         const resultado = await fetch(url);
-//         grupos_global = await resultado.json();
+    const modal = document.getElementById("modalAsignacion");
+    const btnAbrir = document.getElementById("asignar-grupos");
+    const btnCerrar = document.getElementById("cerrar");
+    const form = document.getElementById("formAsignacion");
 
-//         mostrarGrupos(grupos_global);
+    if (btnAbrir) {
+        // Abrir el modal
+        btnAbrir.addEventListener("click", function () {
+            modal.style.display = "flex";
+            cargarOpciones();
+        });
+    }
 
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
+    if (btnCerrar) {
+        // Cerrar el modal
+        btnCerrar.addEventListener("click", function () {
+            cerrarModalAsignacion();
+        });
+    }
+
+    if (form) {
+        // Evento submit para guardar asignación
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault(); // Evitar recarga
+
+            const selectGrupo = document.getElementById("selectGrupo");
+            const selectAsignatura = document.getElementById("selectAsignatura");
+
+            const grupoid = selectGrupo.value;
+            const cursoid = selectAsignatura.value;
+            const usuarioid = document.getElementById("usuario-id").dataset.id;
+
+            const nombreGrupo = selectGrupo.options[selectGrupo.selectedIndex].text;
+            const nombreAsignatura = selectAsignatura.options[selectAsignatura.selectedIndex].text;
+
+            if (!grupoid || !cursoid) {
+                mostrarNotificacion("⚠️ Debes seleccionar un grupo y una asignatura.");
+                return;
+            }
+
+            try {
+                const respuesta = await fetch(`${url_real}/api/guardar-asignacion`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        docenteid: usuarioid,
+                        grupoid: grupoid,
+                        cursoid: cursoid,
+                        nombre_grupo: nombreGrupo,
+                        nombre_asignatura: nombreAsignatura
+                    })
+                });
+
+                const resultado = await respuesta.json();
+                console.log("📥 Respuesta de la API:", resultado);
+
+                if (resultado.exito) {
+                    mostrarNotificacion("✅ Asignación guardada correctamente");
+                    cerrarModalAsignacion();
+                    cargarAsignaciones();
+                } else {
+                    mostrarNotificacion(`⚠️ Error: ${resultado.error || "No se pudo guardar"}`);
+                }
+            } catch (error) {
+                console.error("⚠️ Error en fetch:", error);
+                mostrarNotificacion("⚠️ Error en la conexión con el servidor.");
+            }
+        });
+    }
+}
+
+function cerrarModalAsignacion() {
+    document.getElementById("modalAsignacion").style.display = "none";
+}
+
+async function cargarOpciones() {
+    try {
+        const respuestaGrupos = await fetch(`${url_real}/api/grupos`);
+        const grupos = await respuestaGrupos.json();
+
+        grupos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+        const selectGrupo = document.getElementById("selectGrupo");
+        selectGrupo.innerHTML = '<option value="">-- Seleccionar --</option>';
+        grupos.forEach(grupo => {
+            selectGrupo.innerHTML += `<option value="${grupo.idgrupo}">${grupo.nombre}</option>`;
+        });
+
+        const respuestaAsignaturas = await fetch(`${url_real}/api/asignaturas`);
+        const asignaturas = await respuestaAsignaturas.json();
+
+        const selectAsignatura = document.getElementById("selectAsignatura");
+        selectAsignatura.innerHTML = '<option value="">-- Seleccionar --</option>';
+        asignaturas.forEach(asignatura => {
+            selectAsignatura.innerHTML += `<option value="${asignatura.idasignatura}">${asignatura.nombre}</option>`;
+        });
+
+    } catch (error) {
+        console.error("Error cargando opciones:", error);
+    }
+}
+
 
 async function cargarAsignaciones() {
     try {
-        const url = 'http://localhost:3002/api/asignaciones';
+        const url = `${url_real}/api/asignaciones`;
         const respuesta = await fetch(url);
         const asignaciones = await respuesta.json();
+
+        asignaciones.sort((a, b) => a.nombre_grupo.localeCompare(b.nombre_grupo));
 
         // console.log("Asignaciones recibidas:", asignaciones);
 
@@ -89,24 +194,30 @@ async function cargarAsignaciones() {
         selectAsignaturas.innerHTML = `<option value="">--Seleccione--</option>`;
 
         // Llenar los selectores con los datos recibidos de la API
-        asignaciones.forEach(asignacion => {
-            if (asignacion.nombre_grupo) {
-                const opcionGrupo = document.createElement("option");
-                opcionGrupo.value = asignacion.grupoid;
-                opcionGrupo.textContent = asignacion.nombre_grupo;
-                selectGrupos.appendChild(opcionGrupo);
-            }
+        const gruposUnicos = new Set();
+        const asignaturasUnicas = new Set();
 
-            if (asignacion.nombre_asignatura) {
-                const opcionAsignatura = document.createElement("option");
-                opcionAsignatura.value = asignacion.cursoid;
-                opcionAsignatura.textContent = asignacion.nombre_asignatura;
-                selectAsignaturas.appendChild(opcionAsignatura);
-            }
-        });
+       // Recorrer los datos y agregar solo valores únicos
+       asignaciones.forEach(asignacion => {
+        // Filtrar grupos únicos
+        if (asignacion.nombre_grupo && !gruposUnicos.has(asignacion.grupoid)) {
+            gruposUnicos.add(asignacion.grupoid); // Agregar al Set
+            const opcionGrupo = document.createElement("option");
+            opcionGrupo.value = asignacion.grupoid;
+            opcionGrupo.textContent = asignacion.nombre_grupo;
+            selectGrupos.appendChild(opcionGrupo);
+        }
 
-        // console.log("Opciones de grupos agregadas:", selectGrupos.innerHTML);
-        // console.log("Opciones de asignaturas agregadas:", selectAsignaturas.innerHTML);
+        // Filtrar asignaturas únicas
+        if (asignacion.nombre_asignatura && !asignaturasUnicas.has(asignacion.cursoid)) {
+            asignaturasUnicas.add(asignacion.cursoid); // Agregar al Set
+            const opcionAsignatura = document.createElement("option");
+            opcionAsignatura.value = asignacion.cursoid;
+            opcionAsignatura.textContent = asignacion.nombre_asignatura;
+            selectAsignaturas.appendChild(opcionAsignatura);
+        }
+    });
+
 
     } catch (error) {
         console.error("Error al cargar asignaciones:", error);
@@ -121,7 +232,7 @@ async function cargarAsignaciones() {
 
 async function consultarApi(){
     try {
-        const url = 'http://localhost:3002/api/estudiantes';
+        const url = `${url_real}/api/estudiantes`;
         const resultado = await fetch(url);
         estudiante_global = await resultado.json();
 
@@ -136,7 +247,7 @@ async function consultarApi(){
 
 async function consultarReportes(){
     try {
-        const url = 'http://localhost:3002/api/reporte';
+        const url = `${url_real}/api/reporte`;
         const resultado = await fetch(url);
         reportes_global = await resultado.json();
 
@@ -266,17 +377,21 @@ function mostrarReportes(registros) {
 
 
 function mostrarEstudiantes(estudiantes) {
+
+     // Ordenar los estudiantes alfabéticamente por nombre
+    estudiantes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
     estudiantes.forEach(estudiante => {
         const { codigo, documento, fechaNacimiento, nombre_grupo, nombre, estado, fecha , email} = estudiante;
 
         const nombreEstudiante = document.createElement('H4');
         nombreEstudiante.classList.add('nombre-estudiante');
         nombreEstudiante.textContent = nombre;
-
         const estadoEstudiante = document.createElement('P');
         estadoEstudiante.classList.add('estado-estudiante');
         estadoEstudiante.textContent = estado ? estado : '';
-        if (estado && fecha === hoy) {
+        if (estado && fecha == hoy) {
+            console.log('cumple');
             estadoEstudiante.classList.remove('oculto');
         } else {
             estadoEstudiante.classList.add('oculto');
@@ -544,7 +659,7 @@ async function actualizarReporte(id, nuevoReporte, nuevoComentario) {
     datos.append('comentario', nuevoComentario);
 
     try {
-        const respuesta = await fetch("http://localhost:3002/api/actualizar-asistencia", {
+        const respuesta = await fetch(`${url_real}/api/actualizar-asistencia`, {
             method: "POST",
             body: datos
         });
@@ -622,7 +737,7 @@ async function enviarNovedad(estudiante, reporte, comentario) {
     try {
         console.log("📤 Enviando datos a la API...", Object.fromEntries(datos)); // 🛠 DEPURACIÓN
 
-        const respuesta = await fetch("http://localhost:3002/api/asistencia", {
+        const respuesta = await fetch(`${url_real}/api/asistencia`, {
             method: 'POST',
             body: datos
         });
@@ -641,7 +756,7 @@ async function enviarNovedad(estudiante, reporte, comentario) {
             filtrarReportesPorEstudiante(estudiante.codigo); // Mostrar solo los del estudiante
 
             // 🔄 Actualizar la información del estudiante en info-detallada
-            verEstudiante(estudiante.nombre, estudiante.codigo, estudiante.documento, estudiante.fechaNacimiento, estudiante.grupoid, estudiante.email);
+            verEstudiante(estudiante.nombre, estudiante.codigo, estudiante.documento, estudiante.fechaNacimiento, estudiante.nombre_grupo, estudiante.email);
         } else {
             console.error("⚠️ Error en la API:", resultado);
             mostrarNotificacion("⚠️ Error al registrar la novedad.");
@@ -660,7 +775,7 @@ async function eliminarReporte(id) {
     }
 
     try {
-        const url = "http://localhost:3002/api/eliminar-asistencia"; // Asegúrate de que la ruta sea correcta
+        const url = `${url_real}/api/eliminar-asistencia`; // Asegúrate de que la ruta sea correcta
 
         const formData = new FormData();
         formData.append("id", id);
@@ -740,7 +855,7 @@ document.getElementById("grupo-completo").addEventListener("click", async functi
     formData.append("fecha", fechaActual);
 
     try {
-        const respuesta = await fetch("http://localhost:3002/api/grupo-completo", {
+        const respuesta = await fetch(`${url_real}/api/grupo-completo`, {
             method: "POST",
             body: formData,
         });
@@ -759,19 +874,5 @@ document.getElementById("grupo-completo").addEventListener("click", async functi
     }
 });
 
-// MODAL
 
-// function abrirModalComentario(estudiante, reporte) {
-//     estudianteActual = estudiante;
-//     tipoReporteActual = reporte;
 
-//     document.getElementById("comentarioEstudiante").textContent = estudiante.nombre;
-//     document.getElementById("comentarioReporte").textContent = reporte;
-//     document.getElementById("comentario").value = ""; // Limpiar el campo de comentario
-
-//     document.getElementById("modalComentario").style.display = "block";
-// }
-
-// function cerrarModalComentario() {
-//     document.getElementById("modalComentario").style.display = "none";
-// }

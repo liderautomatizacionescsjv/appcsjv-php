@@ -1,7 +1,7 @@
 {
-  "name": "bienesraices",
+  "name": "aplicativoasistencia",
   "version": "1.0.0",
-  "description": "Curso Desarrollo Web Completo",
+  "description": "Aplicativo asistencia CSJV",
   "main": "gulpfile.js",
   "scripts": {
     "dev": "gulp",

@@ -1,6 +1,8 @@
+const url_real = document.getElementById('urlreal').dataset.url;
+
 document.addEventListener("DOMContentLoaded", function () {
     cargarMisReservas();
-
+    
     if (document.getElementById("calendar")) {
         iniciarCalendario();
     }
@@ -29,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (horaInicio && horaFin) {
 
-        horaInicio.setAttribute("min", "07:00");
+        horaInicio.setAttribute("min", "07:30");
         horaInicio.setAttribute("max", "15:00");
         horaFin.setAttribute("min", "08:00");
         horaFin.setAttribute("max", "16:00");
@@ -42,10 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Convertir a objeto Date para manipular la hora
             let [hora, minutos] = inicio.split(":").map(Number);
 
-            if (hora < 7) {
-                mostrarNotificacion("⚠️ La hora mínima de reserva es 7:00 AM");
-                horaInicio.value = "07:00";
+            if (hora < 7 || (hora === 7 && minutos < 30)) {
+                mostrarNotificacion("⚠️ La hora mínima de reserva es 7:30 AM");
+                horaInicio.value = "07:30";
                 hora = 7;
+                minutos = 30;
             }
 
             let nuevaHora = hora + 1; // Sumar 1 hora
@@ -98,7 +101,7 @@ function loadCarros() {
 
     if (!sedeSeleccionada) return;
 
-    fetch(`http://localhost:3002/api/carros?sede=${sedeSeleccionada}`)  // Cambiar a `/reservas/carros?sede=Medellín` si usas ReservaController
+    fetch(`${url_real}/api/carros?sede=${sedeSeleccionada}`)  // Cambiar a `/reservas/carros?sede=Medellín` si usas ReservaController
         .then(response => response.json())
         .then(data => {
             console.log("Datos recibidos de la API:", data);
@@ -140,7 +143,7 @@ function iniciarCalendario() {
             center: 'title',
             right: 'timeGridWeek,timeGridDay'
         },
-        slotMinTime: '07:00:00',
+        slotMinTime: '07:30:00',
         slotMaxTime: '17:00:00',
         businessHours: {
             daysOfWeek: [1, 2, 3, 4, 5], // Lunes a Viernes
@@ -183,8 +186,8 @@ function selectCarro(carroElement) {
 }
 
 
-function loadCalendar(carroId) {
-    fetch(`http://localhost:3002/api/reservas?carro_id=${carroId}`)
+function loadCalendar(carroId, fechaSeleccionada = null) {
+    fetch(`${url_real}/api/reservas?carro_id=${carroId}`)
         .then(response => response.json())
         .then(data => {
             console.log("Reservas recibidas para el calendario:", data);
@@ -196,7 +199,6 @@ function loadCalendar(carroId) {
 
             const calendarEl = document.getElementById('calendar');
 
-            // Si ya existe un calendario, primero lo destruye
             if (window.calendarInstance) {
                 window.calendarInstance.destroy();
             }
@@ -210,16 +212,19 @@ function loadCalendar(carroId) {
                     center: 'title',
                     right: 'timeGridWeek,timeGridDay'
                 },
-                slotMinTime: '07:00:00',
+                slotMinTime: '07:30:00',  // ✅ Ahora la hora mínima es 7:30 AM
                 slotMaxTime: '17:00:00',
                 businessHours: {
                     daysOfWeek: [1, 2, 3, 4, 5], // Lunes a Viernes
-                    startTime: '07:00',
+                    startTime: '07:30',  // ✅ Ajustado a 7:30 AM
                     endTime: '17:00',
                 },
                 weekends: false,
                 allDaySlot: false,
-                events: data,  // 📌 Se pasa la información desde la API
+                events: data,
+
+                // 📌 Solo cambiar la fecha si se ha seleccionado una nueva, de lo contrario usa la actual
+                initialDate: fechaSeleccionada || new Date().toISOString().split("T")[0], 
 
                 eventClick: function(info) {
                     const event = info.event;
@@ -227,7 +232,7 @@ function loadCalendar(carroId) {
                         carro: event.extendedProps.carro,
                         grupo: event.extendedProps.grupo,
                         responsable: event.extendedProps.responsable,
-                        fecha: event.extendedProps.fecha,  // 📌 Se obtiene la fecha del evento
+                        fecha: event.extendedProps.fecha,
                         horaInicio: event.start.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
                         horaFin: event.end.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
                         cantidadComputadores: event.extendedProps.cantidadComputadores,
@@ -239,9 +244,15 @@ function loadCalendar(carroId) {
             });
 
             window.calendarInstance.render();
+            
+            // 📌 Si hay una fecha seleccionada, mover el calendario a esa fecha
+            if (fechaSeleccionada) {
+                window.calendarInstance.gotoDate(fechaSeleccionada);
+            }
         })
         .catch(error => console.error("Error al cargar reservas en el calendario:", error));
 }
+
 
 
 
@@ -315,7 +326,7 @@ function verificarDisponibilidad() {
         return;
     }
 
-    fetch(`http://localhost:3002/api/disponibilidad?carro_id=${carroId}&fecha=${fecha}&horaInicio=${horaInicio}&horaFin=${horaFin}`)
+    fetch(`${url_real}/api/disponibilidad?carro_id=${carroId}&fecha=${fecha}&horaInicio=${horaInicio}&horaFin=${horaFin}`)
         .then(response => response.json())
         .then(data => {
             console.log("Respuesta de API:", data);
@@ -391,9 +402,11 @@ document.getElementById('formReserva').addEventListener('submit', function(event
         return;
     }
 
+    const fechaReserva = document.getElementById('fechaReserva').value; // Obtener la fecha seleccionada
+
     const data = {
         carro: selectedCarro.dataset.carroId,
-        fecha: document.getElementById('fechaReserva').value,
+        fecha: fechaReserva,  // Guardar la fecha
         horaInicio: document.getElementById('horaInicio').value,
         horaFin: document.getElementById('horaFin').value,
         cantidadComputadores: document.getElementById('cantidadComputadores').value,
@@ -402,7 +415,7 @@ document.getElementById('formReserva').addEventListener('submit', function(event
 
     console.log(data);
 
-    fetch('http://localhost:3002/api/reservas/crear', {
+    fetch(`${url_real}/api/reservas/crear`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -410,10 +423,13 @@ document.getElementById('formReserva').addEventListener('submit', function(event
     .then(response => response.json())
     .then(result => {
         if (result.status === 'success') {
-            mostrarNotificacion("Reserva realizada con éxito ✅"); // Mostrar notificación
-            limpiarFormularioReserva(); // Limpiar formulario
+            mostrarNotificacion("Reserva realizada con éxito ✅");
+            limpiarFormularioReserva();
             cerrarModalReserva();
-            loadCalendar(selectedCarro.dataset.carroId); // Recargar el calendario con las nuevas reservas
+
+            // 📌 Ahora el calendario se actualizará y se moverá automáticamente a la fecha seleccionada
+            loadCalendar(selectedCarro.dataset.carroId, fechaReserva); 
+
         } else {
             alert('Error al reservar: ' + result.message);
             mostrarNotificacion("Error al realizar la reserva ❌");
@@ -421,6 +437,7 @@ document.getElementById('formReserva').addEventListener('submit', function(event
     })
     .catch(error => console.error("Error al realizar la reserva:", error));
 });
+
 
 async function cargarMisReservas() {
     try {

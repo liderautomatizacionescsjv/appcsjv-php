@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../includes/app.php';
+require_once __DIR__ . '/../app/includes/app.php';
 
 use Controllers\ApiController;
 use Controllers\ControlAsistencia;
@@ -48,6 +48,10 @@ $router->get('/api/carros', [ApiController::class, 'obtenerCarros']);
 $router->get('/api/reservas', [ApiController::class, 'obtenerReservas']);
 $router->get('/api/mis-reservas', [ApiController::class, 'obtenerMisReservas']);
 $router->get('/api/disponibilidad', [ApiController::class, 'verificarDisponibilidad']);
+$router->get('/api/grupos', [ApiController::class, 'obtenerGrupos']);
+$router->get('/api/asignaturas', [ApiController::class, 'obtenerAsignaturas']);
+
+
 
 
 
@@ -57,6 +61,8 @@ $router->post('/api/grupo-completo', [ApiController::class, 'grupoCompleto']);
 $router->post('/api/reservas/crear', [ApiController::class, 'crearReserva']);
 $router->post('/api/eliminar-reserva', [ApiController::class, 'eliminarReserva']);
 $router->post('/api/actualizar-asistencia', [ApiController::class, 'actualizar']);
+$router->post('/api/guardar-asignacion', [ApiController::class, 'guardarAsignacion']);
+
 
 // API ELIMINAR
 $router->post('/api/eliminar-asistencia', [ApiController::class, 'eliminar']);
